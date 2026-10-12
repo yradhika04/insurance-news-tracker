@@ -1,0 +1,533 @@
+{
+  "name": "Insurance News Tracker",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -128,
+        0
+      ],
+      "id": "e281c5e0-a8f2-4bf9-9876-257bd134ac3f",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "14dXTgoRZfdySD2rH-cj-gef793-OtK548mrWiRgxFbo",
+          "mode": "list",
+          "cachedResultName": "Insurance_News_Tracker",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14dXTgoRZfdySD2rH-cj-gef793-OtK548mrWiRgxFbo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Insurers",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14dXTgoRZfdySD2rH-cj-gef793-OtK548mrWiRgxFbo/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        80,
+        0
+      ],
+      "id": "cdccf909-b915-44b9-b7af-2f2eced44857",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ZGtY8WuqiJIODxZx",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://news.google.com/rss/search?q={{ $json.Search_term }}+claims+when:180d&hl=en",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        272,
+        0
+      ],
+      "id": "ca7903e0-3024-4ef8-a772-e1dadd43fd4b",
+      "name": "RSS Read"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=inca is a startup that automates insurance claims processing using agentic AI for European insurers. You are analysing news for the founders' market intelligence.\n\nInsurer: {{ $json.Name }}\nNews headline: {{ $json.title }}\n\nReturn ONLY valid JSON, no other text:\n{\n  \"signal_type\": \"claims | ai_digitalization | leadership_change | restructuring | regulation | competitor | irrelevant\",\n  \"relevance_score\": 1-5,\n  \"rationale\": \"one sentence, based only on the headline above\",\n  \"implication\": \"one sentence on the strategic implication for inca (market, competition, regulation or timing), or empty if score < 3\"\n\n}\nBe accurate and if the headline is not about this insurer or is not useful, use \"irrelevant\" and score 1.",
+        "messages": {
+          "messageValues": []
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        864,
+        0
+      ],
+      "id": "9da431a4-ef1d-4cbc-a820-5610296fd902",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "dataSourceId": {
+          "__rl": true,
+          "value": "3f783b9b-58f2-8027-a060-000b872f0fbf",
+          "mode": "list",
+          "cachedResultName": "Accounts",
+          "cachedResultUrl": "https://app.notion.com/p/3f783b9b58f280fbb877ee1dde6a9ccc"
+        },
+        "title": "Insurance News Tracker",
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "Headline|title",
+              "title": "={{ $json.headline }}"
+            },
+            {
+              "key": "Insurer|rich_text",
+              "textContent": "={{ $json.insurer }}"
+            },
+            {
+              "key": "Signal|rich_text",
+              "textContent": "={{ $json.signal_type }}"
+            },
+            {
+              "key": "Score|number",
+              "numberValue": "={{ $json.score }}"
+            },
+            {
+              "key": "Rationale|rich_text",
+              "textContent": "={{ $json.rationale }}"
+            },
+            {
+              "key": "Implication|rich_text",
+              "textContent": "={{ $json.implication }}"
+            },
+            {
+              "key": "Link|url",
+              "urlValue": "={{ $json.link }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 3,
+      "position": [
+        1456,
+        -96
+      ],
+      "id": "91f4e0af-c2bd-4925-8a61-332ba6bb050c",
+      "name": "Create a database page",
+      "credentials": {
+        "notionApi": {
+          "id": "hB5pxFfU0Ouwj395",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "14dXTgoRZfdySD2rH-cj-gef793-OtK548mrWiRgxFbo",
+          "mode": "list",
+          "cachedResultName": "Insurance_News_Tracker",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14dXTgoRZfdySD2rH-cj-gef793-OtK548mrWiRgxFbo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 646963689,
+          "mode": "list",
+          "cachedResultName": "Result",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14dXTgoRZfdySD2rH-cj-gef793-OtK548mrWiRgxFbo/edit#gid=646963689"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Date": "={{ $now.toISODate()}}",
+            " Insurer": "={{$json.insurer }}",
+            " Headline": "={{$json.headline}}",
+            " Signal_type": "={{$json.signal_type}}",
+            "Score": "={{ $json.score }}",
+            "Rationale": "={{ $json.rationale }}",
+            "Link": "={{ $json.link }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": " Insurer",
+              "displayName": " Insurer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": " Headline",
+              "displayName": " Headline",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": " Signal_type",
+              "displayName": " Signal_type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Score",
+              "displayName": "Score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Rationale",
+              "displayName": "Rationale",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Link",
+              "displayName": "Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1456,
+        96
+      ],
+      "id": "c4371539-b171-4643-8675-2a55e967ac8e",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ZGtY8WuqiJIODxZx",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "language": "pythonNative",
+        "pythonCode": "# Loop over input items and add a new field called 'my_new_field' to the JSON of each one\nseen = {}\nout = []\nfor item in _items:\n  key = item[\"json\"][\"row_number\"]\n  seen[key] = seen.get(key, 0) + 1\n  if seen[key] <= 3:\n        out.append(item)\nreturn out"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        672,
+        0
+      ],
+      "id": "b9fc75a9-522c-44d9-b022-496926adf60d",
+      "name": "Code in Python"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a35eb464-61a4-40b1-a6ff-1065abd8ec40",
+              "name": "row_number",
+              "value": "={{ $('Get row(s) in sheet').item.json.row_number }}",
+              "type": "number"
+            },
+            {
+              "id": "18ddb877-fc57-41fc-9264-01ea8c2097af",
+              "name": "Name",
+              "value": "={{ $('Get row(s) in sheet').item.json.Name }}",
+              "type": "string"
+            },
+            {
+              "id": "0d4439e8-b284-475d-b3db-bcc76eddfa20",
+              "name": "title",
+              "value": "={{ $json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "1207d514-57c4-465d-ada4-ca860947e47f",
+              "name": "link",
+              "value": "={{ $json.link }}",
+              "type": "string"
+            },
+            {
+              "id": "c15783f5-8e60-4f77-985e-d6040347c08a",
+              "name": "pubDate",
+              "value": "={{ $json.pubDate }}",
+              "type": "string"
+            },
+            {
+              "id": "8e66c402-7720-42ad-8a63-7f2d0b35f4df",
+              "name": "content",
+              "value": "={{ $json.content }}",
+              "type": "string"
+            },
+            {
+              "id": "a9f350f8-2597-4413-a326-d1e89424ccdd",
+              "name": "contentSnippet",
+              "value": "={{ $json.contentSnippet }}",
+              "type": "string"
+            },
+            {
+              "id": "a14fa909-2a20-4578-a545-8cd12437bbb1",
+              "name": "guid",
+              "value": "={{ $json.guid }}",
+              "type": "string"
+            },
+            {
+              "id": "8b5024a2-fbb2-4e9e-9bfa-f7aad4ec46ed",
+              "name": "isoDate",
+              "value": "={{ $json.isoDate }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        464,
+        0
+      ],
+      "id": "59a199ca-192b-491c-b785-f5d30047ca5b",
+      "name": "Edit Fields 1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3b692111-e3db-462e-b3d8-2e3d3807decd",
+              "name": "insurer",
+              "value": "={{ $('Code in Python').item.json.Name }}",
+              "type": "string"
+            },
+            {
+              "id": "949341e7-a396-474c-a579-992630c966cb",
+              "name": "headline",
+              "value": "={{ $('RSS Read').item.json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "b90f3dcf-1b65-45b9-87f8-c33076a2d11d",
+              "name": "link",
+              "value": "={{ $('RSS Read').item.json.link }}",
+              "type": "string"
+            },
+            {
+              "id": "0b64490f-9a13-40bd-b18d-8851cebbe12d",
+              "name": "signal_type",
+              "value": "={{ JSON.parse($json.text).signal_type }}",
+              "type": "string"
+            },
+            {
+              "id": "bc5cc5e8-80ac-4040-9f6a-206092cec8af",
+              "name": "score",
+              "value": "={{ JSON.parse($json.text).relevance_score }}",
+              "type": "number"
+            },
+            {
+              "id": "07ce8cd4-e90b-4ba5-9e70-0b89a6334171",
+              "name": "rationale",
+              "value": "={{ JSON.parse($json.text).rationale }}",
+              "type": "string"
+            },
+            {
+              "id": "c95bcd64-4a9d-444a-8a52-84b03cbc0f8d",
+              "name": "implication",
+              "value": "={{ JSON.parse($json.text).implication}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        1184,
+        0
+      ],
+      "id": "9ca96a1b-cb86-4115-836f-c7fa933e9da7",
+      "name": "Edit Fields 2"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-haiku-5-5",
+          "mode": "list",
+          "cachedResultName": "Claude Haiku 5.5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.6,
+      "position": [
+        864,
+        160
+      ],
+      "id": "352d3ccb-baa1-4eeb-810c-9ce28629680e",
+      "name": "Anthropic Chat Model",
+      "credentials": {
+        "anthropicApi": {
+          "id": "eFOifc00zOGWtKoK",
+          "name": "Anthropic account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "RSS Read",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Read": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in Python": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields 1": {
+      "main": [
+        [
+          {
+            "node": "Code in Python",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields 2": {
+      "main": [
+        [
+          {
+            "node": "Create a database page",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "91adad56-3616-4b34-9d61-8dd93144d5d8",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "7f958f2d4dd5c3a231ce9ccd37c7444af543715172242ea6c7de76d4cfea16e0"
+  },
+  "nodeGroups": [],
+  "id": "pvibummSJJfejy0G",
+  "tags": []
+}

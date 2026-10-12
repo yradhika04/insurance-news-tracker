@@ -4,7 +4,7 @@ This workflow, built with n8n, Google Sheets, Notion, and an Anthropic Chat Mode
 (Claude Haiku 5.5), tracks news on 25 European insurers and scores it for relevance 
 to claims processing automation. The public Notion database is available [here.](https://app.notion.com/p/3f783b9b58f280fbb877ee1dde6a9ccc?v=3f783b9b58f2806891b6000ce6e42a25&source=copy_link)
 
-![n8n workflow](images/n8n_workflow.png)
+![n8n workflow](./images/n8n_workflow.png)
 
 ### n8n Flow
 
@@ -22,7 +22,7 @@ graph TD
 do with claims or AI
 - Headlines related to claims were assigned the highest scores
 
-![Google Sheets data](images/Google_Sheets_data.png)
+![Google Sheets data](./images/Google_Sheets_data.png)
 
 
 ### Limitations
